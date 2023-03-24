@@ -32,7 +32,7 @@ bot = commands.Bot(command_prefix="&", description=description, intents=intents)
 @bot.event
 async def on_ready():
     logger.info(f"Logged in as {bot.user} (ID: {bot.user.id})")
-    server: discord.abc.Guild = bot.get_guild(874974449403826197)
+    server: discord.Guild = bot.get_guild(874974449403826197)
     # print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     # print("------")
 
