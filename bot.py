@@ -1,10 +1,7 @@
 import logging
 import os
-import random
-import sys
 
 import discord
-from discord.abc import Messageable
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -16,7 +13,10 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = os.getenv("BOT_TOKEN") or ""
+BOT_GUILD_STR = os.getenv("BOT_GUILD") or "0"
+BOT_GUILD = int(BOT_GUILD_STR)
+
 
 description = """
 A bot intended to perform tasks on the Fus and Auriel's Dream Discord server
@@ -31,8 +31,11 @@ bot = commands.Bot(command_prefix="&", description=description, intents=intents)
 
 @bot.event
 async def on_ready():
-    logger.info(f"Logged in as {bot.user} (ID: {bot.user.id})")
-    server: discord.abc.Guild = bot.get_guild(710168130378530927)
+    if bot.user is not None:
+        logger.info(f"Logged in as {bot.user} (ID: {bot.user.id})")
+    else:
+        logger.warn("Bot user is None")
+    server: discord.Guild = bot.get_guild(710168130378530927)  # type: ignore
     # print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     # print("------")
 
@@ -105,7 +108,9 @@ async def on_message(message: discord.Message):
     #     python = sys.executable
     #     os.execl(python, python, *sys.argv)
 
-    if "screenshots" in message.channel.name:
+    channel_name: str = ""
+    channel_name = message.channel.name  # type: ignore
+    if "screenshots" in channel_name:
         logger.debug("Message was sent in screenshot channel, handling...")
         await screenshots.handle_in_screenshots(message)
 

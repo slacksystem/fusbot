@@ -1,8 +1,8 @@
 import logging
 # import sys
-from typing import List, Union
+from typing import List
 
-from discord import Attachment, Embed, File, Member, Message, Thread, User, abc
+from discord import Attachment, Member, Message, TextChannel, Thread
 from discord.abc import Messageable
 from discord.errors import Forbidden, HTTPException, NotFound
 
@@ -24,12 +24,15 @@ async def handle_in_screenshots(message: Message):
         pic for pic in message.attachments if pic.content_type.startswith("image")
     ]
     logger.debug(f"{len(pictures)=}")
-    author: Union[Member, User] = message.author
+    author: Member = message.author  # type: ignore
+
     channel: Messageable = message.channel
+    if not isinstance(channel, TextChannel):
+        return
     if pictures:
         logger.debug(f"{pictures=}")
         # Create thread
-        new_thread: Thread = await message.channel.create_thread(
+        new_thread: Thread = await message.channel.create_thread(  # type: ignore
             name=f"Screenshot from {author.name}",
             message=message,
         )
@@ -49,6 +52,12 @@ async def handle_in_screenshots(message: Message):
         #     await new_thread.send(file=imagefile, embed=an_embed)
 
     else:
+        if channel.permissions_for(author).manage_messages:
+
+            return
+        logger.debug(message.channel.permissions_for(author))
+        logger.debug(message.channel.permissions_for(author).manage_messages)
+
         response: Message = await channel.send(
             f"{author.mention}, Only messages with screenshots can "
             "can be sent in this channel, if you want to comment on "
