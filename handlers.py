@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 # logger.addHandler(handler)
 
 
-async def handle_in_screenshots(message: Message):
+async def handle_screenshots(message: Message):
     pictures: List[Attachment] = [
         pic for pic in message.attachments if pic.content_type.startswith("image")
     ]
@@ -80,3 +80,7 @@ async def handle_in_screenshots(message: Message):
         except HTTPException as e:
             logger.error(f"HTTPException: {e.code=}, {e.text=}, {e.status=}")
         await response.delete(delay=5)
+
+
+async def handle_mod_releases(message: Message):
+    pass

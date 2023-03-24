@@ -5,17 +5,16 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
+import handlers
 import logging_config
-import screenshots
 
 logging_config.configure_logging()
 logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-BOT_TOKEN = os.getenv("BOT_TOKEN") or ""
-BOT_GUILD_STR = os.getenv("BOT_GUILD") or "0"
-BOT_GUILD = int(BOT_GUILD_STR)
+BOT_TOKEN: str = os.getenv("BOT_TOKEN")  # type: ignore
+BOT_GUILD: int = int(os.getenv("BOT_GUILD"))  # type: ignore
 
 
 description = """
@@ -35,7 +34,6 @@ async def on_ready():
         logger.info(f"Logged in as {bot.user} (ID: {bot.user.id})")
     else:
         logger.warn("Bot user is None")
-    server: discord.Guild = bot.get_guild(710168130378530927)  # type: ignore
     # print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     # print("------")
 
@@ -100,6 +98,8 @@ async def on_ready():
 async def on_message(message: discord.Message):
     if message.author == bot.user:
         return
+    if message.guild is None or message.guild.id != BOT_GUILD:
+        return
     logger.info(
         f"{message.author} sent message in " f"#{message.channel}: {message.content}"
     )
@@ -108,11 +108,13 @@ async def on_message(message: discord.Message):
     #     python = sys.executable
     #     os.execl(python, python, *sys.argv)
 
-    channel_name: str = ""
-    channel_name = message.channel.name  # type: ignore
+    channel_name: str = message.channel.name  # type: ignore
     if "screenshots" in channel_name:
         logger.debug("Message was sent in screenshot channel, handling...")
-        await screenshots.handle_in_screenshots(message)
+        await handlers.handle_screenshots(message)
+    if channel_name == "new-mod-releases":
+        logger.debug("Message was sent in new mod releases channel, handling...")
+        await handlers.handle_mod_releases(message)
 
     # if message.content.startswith("&hello"):
     #     await message.channel.send("Hello!")
