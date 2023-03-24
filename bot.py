@@ -98,6 +98,8 @@ async def on_ready():
 async def on_message(message: discord.Message):
     if message.author == bot.user:
         return
+    if message.guild is None or message.guild.id != BOT_GUILD:
+        return
     logger.info(
         f"{message.author} sent message in " f"#{message.channel}: {message.content}"
     )
