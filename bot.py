@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_GUILD: int = int(os.getenv("BOT_GUILD"))  # type: ignore
 
 description = """
 A bot intended to perform tasks on the Fus and Auriel's Dream Discord server
