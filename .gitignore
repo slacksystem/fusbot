@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Other
+debug.py
+fusbot.py
+setup.cfg
+fustest/bot.py
+fustest/logging_config.py
+fustest/screenshots.py
