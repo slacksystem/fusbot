@@ -1,8 +1,6 @@
 import json
 import logging
 import os
-import random
-import sys
 from typing import List
 
 import discord
@@ -19,7 +17,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-BOT_GUILD: List[int] = json.loads(os.getenv("BOT_GUILD"))  # type: ignore
+BOT_GUILDS: List[int] = json.loads(os.getenv("BOT_GUILDS"))  # type: ignore
 
 description = """
 A bot intended to perform tasks on the Fus and Auriel's Dream Discord server
@@ -35,13 +33,14 @@ bot = commands.Bot(command_prefix="&", description=description, intents=intents)
 @bot.event
 async def on_ready():
     logger.info(f"Logged in as {bot.user} (ID: {bot.user.id})")
+    logger.info(f"Listening on servers: {BOT_GUILDS}")
 
 
 @bot.event
 async def on_message(message: discord.Message):
     if message.author == bot.user:
         return
-    if message.guild is None or message.guild.id != BOT_GUILD:
+    if message.guild is None or message.guild.id not in BOT_GUILDS:
         return
     logger.info(
         f"{message.author} sent message in " f"#{message.channel}: {message.content}"
