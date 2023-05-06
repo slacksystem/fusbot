@@ -13,7 +13,7 @@ LOGGING_CONF = {
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
             "level": "DEBUG",
-            "filename": "bot.log"
+            "filename": "log.log"
         },
     },
     "loggers": {
