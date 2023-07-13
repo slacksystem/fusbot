@@ -31,7 +31,7 @@ bot = commands.Bot(command_prefix="&", description=description, intents=intents)
 
 @bot.event
 async def on_ready():
-    logger.info(f"Logged in as {bot.user} (ID: {bot.user.id})")
+    logger.info(f"Logged in as {bot.user} (ID: {bot.user.id})")  # type: ignore
     logger.info(f"Listening on servers: {BOT_GUILDS}")
 
 
@@ -45,12 +45,12 @@ async def on_message(message: discord.Message):
         f"{message.author} sent message in " f"#{message.channel}: {message.content}"
     )
 
-    if "screenshots" in message.channel.name:
+    if "screenshots" in message.channel.name:  # type: ignore
         logger.debug("Message was sent in screenshot channel, handling...")
         await handlers.handle_screenshots(message)
-    if channel_name == "new-mod-releases":
+    if message.channel.name == "new-mod-releases":  # type: ignore
         logger.debug("Message was sent in new mod releases channel, handling...")
         await handlers.handle_mod_releases(message)
 
 
-bot.run(BOT_TOKEN)
+bot.run(BOT_TOKEN)  # type: ignore
