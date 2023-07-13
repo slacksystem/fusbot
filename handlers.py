@@ -15,7 +15,7 @@ logging_config.configure_logging()
 logger = logging.getLogger(__name__)
 
 
-async def handle_screenshots(message: Message):
+async def handle_screenshots(message: Message, debug: bool = False) -> None:
     links = [match.group().strip() for match in yt_regex.finditer(message.content)]
     logger.debug(f"Message {message.id} contains links: {links}")
     pictures: List[Attachment] = [
@@ -55,8 +55,7 @@ async def handle_screenshots(message: Message):
             await new_thread.send(file=imagefile, embed=an_embed)
 
     else:
-        if channel.permissions_for(author).manage_messages:
-
+        if channel.permissions_for(author).manage_messages and not debug:
             return
         logger.debug(message.channel.permissions_for(author))
         logger.debug(message.channel.permissions_for(author).manage_messages)

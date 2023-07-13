@@ -1,3 +1,4 @@
+import argparse
 import json
 import logging
 import os
@@ -17,6 +18,10 @@ load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 BOT_GUILDS: List[int] = json.loads(os.getenv("BOT_GUILDS"))  # type: ignore
+
+parser = argparse.ArgumentParser(description="Run the bot")
+parser.add_argument("-d", "--debug", action="store_true", help="Enable debug mode")
+args = parser.parse_args()
 
 description = """
 A bot intended to perform tasks on the Fus and Auriel's Dream Discord server
@@ -47,7 +52,7 @@ async def on_message(message: discord.Message):
 
     if "screenshots" in message.channel.name:  # type: ignore
         logger.debug("Message was sent in screenshot channel, handling...")
-        await handlers.handle_screenshots(message)
+        await handlers.handle_screenshots(message, args.debug)
     if message.channel.name == "new-mod-releases":  # type: ignore
         logger.debug("Message was sent in new mod releases channel, handling...")
         await handlers.handle_mod_releases(message)
