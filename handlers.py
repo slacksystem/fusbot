@@ -1,27 +1,25 @@
 import logging
-# import sys
+
 from typing import List
 
-from discord import Attachment, Member, Message, TextChannel, Thread
+from discord import Attachment, Member, Message, TextChannel, Thread, File, User, Embed
 from discord.abc import Messageable
 from discord.errors import Forbidden, HTTPException, NotFound
+from youtube_links import link_is_yt, yt_regex
 
 import logging_config
 
-# from discord.utils import _ColourFormatter
-
 logging_config.configure_logging()
 logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
-# handler = logging.StreamHandler(sys.stdout)
-# formatter = _ColourFormatter()
-# handler.setFormatter(formatter)
-# logger.addHandler(handler)
 
 
-async def handle_screenshots(message: Message):
+async def handle_screenshots(message: Message, debug: bool = False) -> None:
+    links = [match.group().strip() for match in yt_regex.finditer(message.content)]
+    logger.debug(f"Message {message.id} contains links: {links}")
     pictures: List[Attachment] = [
-        pic for pic in message.attachments if pic.content_type.startswith("image")
+        pic
+        for pic in message.attachments
+        if pic.content_type.startswith("image")  # type: ignore
     ]
     logger.debug(f"{len(pictures)=}")
     author: Member = message.author  # type: ignore
@@ -29,6 +27,10 @@ async def handle_screenshots(message: Message):
     channel: Messageable = message.channel
     if not isinstance(channel, TextChannel):
         return
+    for link in links:
+        if await link_is_yt(link):
+            # if await yt_video_exists(video_id(link)):  # type: ignore
+            return
     if pictures:
         logger.debug(f"{pictures=}")
         # Create thread
@@ -36,24 +38,23 @@ async def handle_screenshots(message: Message):
             name=f"Screenshot from {author.name}",
             message=message,
         )
-        # for index, picture in enumerate(pictures):
-        #     sender: Member | User = message.author
-        #     imagefile: File = await picture.to_file(filename="image", use_cached=True)
-        #     initial_description: str = (  # Description to prepend if first image
-        #         f"User {sender.name} posted {message.content} " if index == 1 else ""
-        #     )
-        #     # Create index'th embed
-        #     an_embed: Embed = Embed(
-        #         description=initial_description + f"{index}/{len(pictures)}",
-        #     )
-        #     # Add the image
-        #     an_embed.set_image(url="attachment://image")
+        for index, picture in enumerate(pictures):
+            sender: Member | User = message.author
+            imagefile: File = await picture.to_file(filename="image", use_cached=True)
+            initial_description: str = (  # Description to prepend if first image
+                f"User {sender.name} posted {message.content} " if index == 1 else ""
+            )
+            # Create index'th embed
+            an_embed: Embed = Embed(
+                description=initial_description + f"{index}/{len(pictures)}",
+            )
+            # Add the image
+            an_embed.set_image(url="attachment://image")
 
-        #     await new_thread.send(file=imagefile, embed=an_embed)
+            await new_thread.send(file=imagefile, embed=an_embed)
 
     else:
-        if channel.permissions_for(author).manage_messages:
-
+        if channel.permissions_for(author).manage_messages and not debug:
             return
         logger.debug(message.channel.permissions_for(author))
         logger.debug(message.channel.permissions_for(author).manage_messages)
