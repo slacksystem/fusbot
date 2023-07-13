@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "fusbot"
+version = "0.1.1"
+description = ""
+authors = ["Slack System <slack@slacksystem.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+"discord.py" = "^2.1.0"
+python-dotenv = "^1.0.0"
+rich = "^10.16.2"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.0.0"
+isort = "^5.12.0"
+pycodestyle = "^2.10.0"
+pyflakes = "^3.0.1"
+pynvim = "^0.4.3"
+python-lsp-server = "^1.7.2"
+openai = "^0.27.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
