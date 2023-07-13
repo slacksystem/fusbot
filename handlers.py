@@ -1,12 +1,11 @@
 import logging
 
 from typing import List
-import re
 
 from discord import Attachment, Member, Message, TextChannel, Thread, File, User, Embed
 from discord.abc import Messageable
 from discord.errors import Forbidden, HTTPException, NotFound
-from youtube_links import link_is_yt, yt_video_exists, video_id, yt_regex
+from youtube_links import link_is_yt, yt_regex
 
 import logging_config
 
