@@ -1,9 +1,12 @@
 import logging
-from typing import List
 
-from discord import Attachment, Member, Message, TextChannel, Thread
+from typing import List
+import re
+
+from discord import Attachment, Member, Message, TextChannel, Thread, File, User, Embed
 from discord.abc import Messageable
 from discord.errors import Forbidden, HTTPException, NotFound
+from youtube_links import link_is_yt, yt_video_exists, video_id, yt_regex
 
 import logging_config
 
@@ -13,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 
 async def handle_screenshots(message: Message):
+    links = [match.group().strip() for match in yt_regex.finditer(message.content)]
+    logger.debug(f"Message {message.id} contains links: {links}")
     pictures: List[Attachment] = [
         pic
         for pic in message.attachments
@@ -24,6 +29,9 @@ async def handle_screenshots(message: Message):
     channel: Messageable = message.channel
     if not isinstance(channel, TextChannel):
         return
+    for link in links:
+        if await link_is_yt(link):
+            return
     if pictures:
         logger.debug(f"{pictures=}")
         # Create thread
