@@ -10,7 +10,6 @@ from youtube_links import link_is_yt, yt_video_exists, video_id, yt_regex
 
 import logging_config
 
-
 logging_config.configure_logging()
 logger = logging.getLogger(__name__)
 
@@ -31,6 +30,7 @@ async def handle_screenshots(message: Message, debug: bool = False) -> None:
         return
     for link in links:
         if await link_is_yt(link):
+            # if await yt_video_exists(video_id(link)):  # type: ignore
             return
     if pictures:
         logger.debug(f"{pictures=}")
